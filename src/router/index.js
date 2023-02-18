@@ -1,27 +1,34 @@
 import Vue from 'vue';
+import store from '@/store';
 import VueRouter from 'vue-router';
-import HomeView from '../views/HomeView.vue';
+import AuthPage from '@/components/AuthPage.vue'
+import MainPage from '@/components/MainPage.vue'
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView,
+    name: 'auth', component: AuthPage, path: '/auth', meta: { requiresNotAuth: true }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+    name: 'main', component: MainPage, path: '/', meta: { requiresAuth: true }
   },
 ];
 
 const router = new VueRouter({
   routes,
 });
+
+// router.beforeEach((to, from, next) => {
+//   if(to.matched.some(record => record.meta.requiresAuth)) {
+//     if (store.state.authorized) {
+//       next();
+//       return;
+//     }
+//     next({ name: 'auth' });
+//   } else {
+//     next();
+//   }
+// })
 
 export default router;
