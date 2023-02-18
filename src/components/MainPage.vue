@@ -171,7 +171,7 @@
       getCards: function() {
         axios.get(`http://localhost:8081/api/idm/`, {})
         .then(response => {
-
+          this.cards = response.data;
         })
         .catch(error => {
 
