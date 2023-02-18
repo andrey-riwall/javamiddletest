@@ -179,12 +179,10 @@
       },
       createOrg: function() {
         axios.post(`http://localhost:8081/api/org/create`, {
-          params: {
-            name: this.formName,
-            INN: this.formINN,
-            subdivision: this.formSubdiv,
-            KPP: this.formKPP,
-          }
+          name: this.formName,
+          INN: this.formINN,
+          subdivision: this.formSubdiv,
+          KPP: this.formKPP,
         })
         .then(response => {
           console.log('succes');
