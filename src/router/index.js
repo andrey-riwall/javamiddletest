@@ -21,6 +21,9 @@ const routes = [
   {
     name: 'error', component: NotFoundPage, path: '*', meta: { requiresNotAuth: true }
   },
+  {
+    path: '/main', redirect: { name: 'main' }, meta: { requiresNotAuth: true }
+  },
 ];
 
 const router = new VueRouter({
