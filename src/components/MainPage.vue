@@ -6,13 +6,32 @@
     <button class="create" @click="createStatus=true">
       Create org
     </button>
+    <button class="createCard" @click="createCardStatus=true">
+      Create card
+    </button>
     <button v-if="createStatus" class="form-close" @click.prevent="createStatus=false">close</button>
+    <button v-if="createCardStatus" class="form-close" @click.prevent="createCardStatus=false">close</button>
     <form action="#" class="create__form" :class="{ is_active: createStatus }" @submit.prevent="createOrg">
       <div class="form-container">
         <input type="text" class="create__input" placeholder="Название" v-model="formName">
         <input type="text" class="create__input" placeholder="ИНН" v-model="formINN">
         <input type="text" class="create__input" placeholder="Подразделение" v-model="formSubdiv">
         <input type="text" class="create__input" placeholder="КПП" v-model="formKPP">
+        <button type="submit" class="create__btn">
+          Создать
+        </button>
+      </div>
+    </form>
+    <form action="#" class="create__form" :class="{ is_active: createCardStatus }" @submit.prevent="createCard">
+      <div class="form-container">
+        <input type="text" class="create__input" placeholder="Название" v-model="cardName">
+        <input type="text" class="create__input" placeholder="Время окончания" v-model="cardTime">
+        <select v-model="formOrgs" class="create__select create__input">
+          <option value="">Выберите организацию</option>
+          <option v-for="org in orgs" :value=org.id :key="orgs.indexOf(org)" value="">
+            {{ org.name }}
+          </option>
+        </select>
         <button type="submit" class="create__btn">
           Создать
         </button>
@@ -26,15 +45,46 @@
             {{ item.heading }}
           </h3>
           <ul class="tabs">
-            <li class="tab" :class="{ is_active: tab.status }" v-for="tab in item.tabs" :key="tab.tab">
-              <button class="tab__btn" @click.prevent="openCard(cards.indexOf(item), tab.content, item.tabs.indexOf(tab))">
-                {{ tab.tab }}
+            <li class="tab" :class="{ is_active: item.requestEntitiesStatus }">
+              <button class="tab__btn" @click.prevent="openRequestEntities(cards.indexOf(item))">
+                Межведомственные запросы
+              </button>
+            </li>
+            <li class="tab" :class="{ is_active: item.documentsStatus }">
+              <button class="tab__btn" @click.prevent="openDocuments(cards.indexOf(item))">
+                Документы
               </button>
             </li>
           </ul>
-          <h4 class="item__heading">
-            {{ item.content }}
-          </h4>
+          <table class="content__table fl-table">
+            <table class="fl-table">
+              <thead>
+              <tr>
+                  <th>Вид запроса</th>
+                  <th>Наименование запроса</th>
+                  <th>Дата создания запроса</th>
+                  <th>Ответсвенный за запрос</th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr v-for="el in item.content" :key="item.content.indexOf(el)">
+                  <td>
+                    {{ el.type.type }}
+                  </td>
+                  <td>
+                    {{ el.name }}
+                  </td>
+                  <td>
+                    {{ el.date }}
+                  </td>
+                  <td>
+                    {{ el.userDTO }}
+                    <!-- {{ el.userDTO.name }} -->
+                  </td>
+                </tr>
+              </tbody>
+          </table>
+          </table>
         </li>
       </ul>
     </div>
@@ -51,7 +101,18 @@
   .login {
     position: absolute;
     top: 50px;
-    right: 30px;
+    right: 25px;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+  }
+
+  .createCard {
+    position: absolute;
+    top: 110px;
+    right: 25px;
     color: white;
     background: none;
     border: none;
@@ -62,7 +123,7 @@
   .create {
     position: absolute;
     top: 80px;
-    right: 30px;
+    right: 25px;
     color: white;
     background: none;
     border: none;
@@ -198,6 +259,47 @@
 
     font-size: 20px;
   }
+
+  .content__list {
+    padding: 10px;
+  }
+
+  .fl-table {
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    background-color: white;
+}
+
+.fl-table td, .fl-table th {
+    text-align: center;
+    padding: 8px;
+}
+
+.fl-table td {
+    border-right: 1px solid #f8f8f8;
+    font-size: 12px;
+}
+
+.fl-table thead th {
+    color: #ffffff;
+    background: #4FC3A1;
+}
+
+
+.fl-table thead th:nth-child(odd) {
+    color: #ffffff;
+    background: #324960;
+}
+
+.fl-table tr:nth-child(even) {
+    background: #F8F8F8;
+}
 </style>
 
 <script>
@@ -209,31 +311,20 @@
     data: function() {
       return {
         createStatus: false,
+        createCardStatus: false,
 
-        cards: [
-          {
-            heading: 'МУ',
-            tabs: [
-              {
-                tab: 'МУ1',
-                content: 'МУ1',
-                status: false,
-              },
-              {
-                tab: 'МУ2',
-                content: 'МУ2',
-                status: false,
-              },
-            ],
-            content: '',
-            status: false,
-          }
-        ],
+        cards: [],
 
         formName: '',
         formINN: '',
         formSubdiv: '',
         formKPP: '',
+
+        cardName: '',
+        cardTime: '',
+        formOrgs: '',
+
+        orgs: [],
       }
     },
     methods: {
@@ -241,29 +332,32 @@
         axios.get(`http://localhost:8081/api/idm/`, {})
         .then(response => {
           let cards = [];
-          let content = response.data.content;
+          let content = response.data.content ? response.data.content : [];
           content.forEach(el => {
             let obj = {
               heading: el.name,
-              tabs: [
-                {
-                  tab: 'МУ1',
-                  content: 'МУ1',
-                  status: false,
-                },
-                {
-                  tab: 'МУ2',
-                  content: 'МУ2',
-                  status: false,
-                },
-              ],
               content: '',
+              requestEntities: el.interdepartmentalRequestEntities,
+              documents: el.interdepartmentalDocuments,
               status: false,
+              documentsStatus: false,
+              requestEntitiesStatus: false,
             }
+            cards.push(obj);
           })
+          this.cards = cards;
         })
         .catch(error => {
-          alert(error);
+          console.log(error, 'getCards');
+        })
+      },
+      getOrgs: function() {
+        axios.get('http://localhost:8081/api/org/', {})
+        .then(response => {
+          this.orgs = response.data.content;
+        })
+        .catch(error => {
+          console.log(error, 'getOrg');
         })
       },
       createOrg: function() {
@@ -278,7 +372,21 @@
           this.createStatus = false;
         })
         .catch(error => {
-          alert(error)
+          console.log(error, 'createOrg')
+        })
+      },
+      createCard: function() {
+        axios.post('http://localhost:8081/api/idm/create-ms', {
+          name: this.cardName,
+          time: this.cardTime,
+          organization: this.orgs.find(el => el.id === this.formOrgs),
+        })
+        .then(response => {
+          console.log('succes');
+          this.createCardStatus = false;
+        })
+        .catch(error => {
+          console.log(error, 'createCard');
         })
       },
       logoutF: function() {
@@ -287,19 +395,22 @@
       },
       ...mapActions({ logout: 'logout' }),
 
-      openCard: function(cardIndex, content, tabIndex) {
-        this.cards[cardIndex].content = content;
-        this.cards[cardIndex].tabs.forEach(el => {
-          el.status = false;
-        })
-        this.cards[cardIndex].tabs[tabIndex].status = true;
-        if(!this.cards[cardIndex].status) {
-          this.cards[cardIndex].status = true;
-        }
-      }
+      openRequestEntities: function(cardIndex) {
+        this.cards[cardIndex].documentsStatus = false;
+        this.cards[cardIndex].status = true;
+        this.cards[cardIndex].content = this.cards[cardIndex].requestEntities;
+        this.cards[cardIndex].requestEntitiesStatus = true;
+      },
+      openDocuments: function(cardIndex) {
+        this.cards[cardIndex].requestEntitiesStatus = false;
+        this.cards[cardIndex].status = true;
+        this.cards[cardIndex].content = this.cards[cardIndex].documents;
+        this.cards[cardIndex].documentsStatus = true;
+      },
     },
     created: function() {
       this.getCards();
+      this.getOrgs();
     },
   }
 </script>

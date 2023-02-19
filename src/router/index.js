@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import store from '@/store';
 import VueRouter from 'vue-router';
-import AuthPage from '@/components/AuthPage.vue'
-import MainPage from '@/components/MainPage.vue'
+import AuthPage from '@/components/AuthPage.vue';
+import MainPage from '@/components/MainPage.vue';
+import AdminPage from '@/components/AdminPage.vue';
 
 Vue.use(VueRouter);
 
@@ -12,6 +13,9 @@ const routes = [
   },
   {
     name: 'main', component: MainPage, path: '/', meta: { requiresAuth: true }
+  },
+  {
+    name: 'admin', component: AdminPage, path: '/admin', meta: { requiresAuth: true }
   },
 ];
 
