@@ -240,18 +240,38 @@
       getCards: function() {
         axios.get(`http://localhost:8081/api/idm/`, {})
         .then(response => {
-          this.cards = response.data;
+          let cards = [];
+          let content = response.data.content;
+          content.forEach(el => {
+            let obj = {
+              heading: el.name,
+              tabs: [
+                {
+                  tab: 'МУ1',
+                  content: 'МУ1',
+                  status: false,
+                },
+                {
+                  tab: 'МУ2',
+                  content: 'МУ2',
+                  status: false,
+                },
+              ],
+              content: '',
+              status: false,
+            }
+          })
         })
         .catch(error => {
-
+          alert(error);
         })
       },
       createOrg: function() {
         axios.post(`http://localhost:8081/api/org/create`, {
           name: this.formName,
-          INN: this.formINN,
+          inn: this.formINN,
           subdivision: this.formSubdiv,
-          KPP: this.formKPP,
+          kpp: this.formKPP,
         })
         .then(response => {
           console.log('succes');
