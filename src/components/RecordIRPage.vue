@@ -1,54 +1,6 @@
 <template>
   <section class="main">
-    <button class="login" @click="logoutF()">Log out</button>
-    <button class="create" @click="createStatus = true">Create org</button>
-    <button class="createCard" @click="createCardStatus = true">Create card</button>
-    <router-link :to="{ name: 'ir' }" class="to-ir">Your ir</router-link>
-    <router-link :to="{ name: 'record' }" class="to-record">Учет МЗ</router-link>
-    <router-link :to="{ name: 'admin' }" class="to-admin">Админка</router-link>
-    <button v-if="createStatus" class="form-close" @click.prevent="createStatus = false">close</button>
-    <button v-if="createCardStatus" class="form-close" @click.prevent="createCardStatus = false">close</button>
-    <button v-if="createIRStatus" class="form-close" @click.prevent="createIRStatus = false">close</button>
-    <form action="#" class="create__form" :class="{ is_active: createStatus }" @submit.prevent="createOrg">
-      <div class="form-container">
-        <input type="text" class="create__input" placeholder="Название" v-model="formName" />
-        <input type="text" class="create__input" placeholder="ИНН" v-model="formINN" />
-        <input type="text" class="create__input" placeholder="Подразделение" v-model="formSubdiv" />
-        <input type="text" class="create__input" placeholder="КПП" v-model="formKPP" />
-        <button type="submit" class="create__btn">Создать</button>
-      </div>
-    </form>
-    <form action="#" class="create__form" :class="{ is_active: createCardStatus }" @submit.prevent="createCard">
-      <div class="form-container">
-        <input type="text" class="create__input" placeholder="Название" v-model="cardName" />
-        <input type="text" class="create__input" placeholder="Время окончания" v-model="cardTime" />
-        <select v-model="cardOrgs" class="create__select create__input">
-          <option value="">Выберите организацию</option>
-          <option v-for="org in orgs" :value="org.id" :key="orgs.indexOf(org)">
-            {{ org.name }}
-          </option>
-        </select>
-        <button type="submit" class="create__btn">Создать</button>
-      </div>
-    </form>
-    <form action="#" class="create__form" :class="{ is_active: createIRStatus }" @submit.prevent="createIR">
-      <div class="form-container">
-        <input type="text" class="create__input" placeholder="Название" v-model="IRName" />
-        <select v-model="IRType" class="create__select create__input">
-          <option value="">Выберите тип запроса</option>
-          <option v-for="type in types" :value="type.id" :key="types.indexOf(type)">
-            {{ type.type }}
-          </option>
-        </select>
-        <select v-model="IRUser" class="create__select create__input">
-          <option value="">Выберите ответсвенного</option>
-          <option v-for="user in users" :value="user.id" :key="users.indexOf(user)">
-            {{ user.name }}
-          </option>
-        </select>
-        <button type="submit" class="create__btn">Создать</button>
-      </div>
-    </form>
+    <router-link :to="{ name: 'main' }" class="to-ir">back</router-link>
     <div class="container">
       <h2 class="heading">Home</h2>
       <ul class="list">
@@ -121,7 +73,6 @@
                 </tr>
               </tbody>
             </table>
-            <button class="content__btn" @click.prevent="updateIR(cards.indexOf(item))">Добавить МЗ</button>
           </div>
         </li>
       </ul>
@@ -136,31 +87,9 @@
   background: #557085;
 }
 
-.to-admin {
-  position: absolute;
-  top: 200px;
-  right: 20px;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-}
-
 .to-ir {
   position: absolute;
   top: 140px;
-  right: 20px;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-}
-
-.to-record {
-  position: absolute;
-  top: 170px;
   right: 20px;
   color: white;
   background: none;
@@ -420,7 +349,7 @@ export default {
   methods: {
     getCards: function () {
       axios
-        .get(`http://localhost:8081/api/idm/`, {})
+        .get(`http://localhost:8081/api/idm/accounting`, {})
         .then((response) => {
           let cards = [];
           this.cardsData = response.data.content ? response.data.content : [];
@@ -444,86 +373,6 @@ export default {
           console.log(error, "getCards");
         });
     },
-    getOrgs: function () {
-      axios
-        .get("http://localhost:8081/api/org/", {})
-        .then((response) => {
-          this.orgs = response.data.content;
-        })
-        .catch((error) => {
-          console.log(error, "getOrg");
-        });
-    },
-    getUsers: function () {
-      axios
-        .get("http://localhost:8081/api/idm/users", {})
-        .then((response) => {
-          this.users = response.data.content;
-        })
-        .catch((error) => {
-          console.log(error, "getUsers");
-        });
-    },
-    getTypes: function() {
-      axios
-        .get('http://localhost:8081/api/idm/type-list', {})
-        .then(response => {
-          this.types = response.data.content;
-        })
-        .catch(error => {
-          console.log(error, 'getTypes');
-        });
-    },
-    createOrg: function () {
-      axios
-        .post("http://localhost:8081/api/org/create", {
-          name: this.formName,
-          inn: this.formINN,
-          subdivision: this.formSubdiv,
-          kpp: this.formKPP,
-        })
-        .then((response) => {
-          console.log("succes");
-          this.createStatus = false;
-          this.getOrgs();
-        })
-        .catch((error) => {
-          console.log(error, "createOrg");
-        });
-    },
-    createCard: function () {
-      axios
-        .post("http://localhost:8081/api/idm/create-ms", {
-          name: this.cardName,
-          time: this.cardTime,
-          organization: this.orgs.find((el) => el.id === this.cardOrgs),
-        })
-        .then((response) => {
-          console.log("succes");
-          this.createCardStatus = false;
-          this.getCards();
-        })
-        .catch((error) => {
-          console.log(error, "createCard");
-        });
-    },
-    createIR: function () {
-      axios
-        .post("http://localhost:8081/api/idm/create-idm", {
-          name: this.IRName,
-          type: this.types.find(type => type.id === this.IRType),
-          user: this.users.find(user => user.id === this.IRUser),
-          municipalServ: this.cardsData[this.createIRCard],
-        })
-        .then(response => {
-          console.log('succes');
-          this.createIRStatus = false;
-          this.getCards();
-        })
-        .catch(error => {
-          console.log(error, 'createIR');
-        })
-    },
 
     logoutF: function () {
       this.logout();
@@ -543,17 +392,9 @@ export default {
       this.cards[cardIndex].content = this.cards[cardIndex].documents;
       this.cards[cardIndex].documentsStatus = true;
     },
-
-    updateIR: function(cardIndex) {
-      this.createIRStatus = true;
-      this.createIRCard = cardIndex;
-    }
   },
   created: function () {
     this.getCards();
-    this.getOrgs();
-    this.getUsers();
-    this.getTypes();
   },
 };
 </script>

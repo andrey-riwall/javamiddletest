@@ -1,10 +1,8 @@
 <template>
   <section class="section" :class="{ active: status }">
 
-
     <div class="container" :class="{ active: status }">
 
-      <!-- LOGIN IN -->
       <div class="user signinBx">
         <div class="imgBx">
           <img class="img" src="@/assets/lock-new.png" alt="">
@@ -23,8 +21,6 @@
         </div>
       </div>
 
-
-      <!-- REGISTRATION -->
       <div class="user signupBx">
         <div class="imgBx">
           <div class="formBx">

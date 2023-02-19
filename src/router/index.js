@@ -6,6 +6,7 @@ import MainPage from '@/components/MainPage.vue';
 import AdminPage from '@/components/AdminPage.vue';
 import YourIRPage from '@/components/YourIRPage.vue';
 import NotFoundPage from '@/components/NotFoundPage.vue';
+import RecordIRPage from '@/components/RecordIRPage.vue';
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,9 @@ const routes = [
     name: 'ir', component: YourIRPage, path: '/your-ir', meta: { requiresAuth: true }
   },
   {
+    name: 'record', component: RecordIRPage, path: '/record-ir', meta: { requiresAuth: true }
+  },
+  {
     name: 'error', component: NotFoundPage, path: '*', meta: { requiresNotAuth: true }
   },
   {
@@ -30,6 +34,9 @@ const routes = [
   },
   {
     path: '/ir', redirect: { name: 'ir' }, meta: { requiresAuth: true }
+  },
+  {
+    path: '/record', redirect: { name: 'record' }, meta: { requiresAuth: true }
   },
 ];
 

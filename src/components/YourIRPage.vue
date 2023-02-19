@@ -90,7 +90,7 @@
     top: 30px;
     left: 30px;
     color: white;
-    font-size: 25px;
+    font-size: 24px;
   }
 
   .container {
