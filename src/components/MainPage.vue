@@ -448,6 +448,7 @@ export default {
         .then((response) => {
           console.log("succes");
           this.createStatus = false;
+          this.getOrgs();
         })
         .catch((error) => {
           console.log(error, "createOrg");
@@ -463,6 +464,7 @@ export default {
         .then((response) => {
           console.log("succes");
           this.createCardStatus = false;
+          this.getCards();
         })
         .catch((error) => {
           console.log(error, "createCard");
@@ -479,6 +481,7 @@ export default {
         .then(response => {
           console.log('succes');
           this.createIRStatus = false;
+          this.getCards();
         })
         .catch(error => {
           console.log(error, 'createIR');

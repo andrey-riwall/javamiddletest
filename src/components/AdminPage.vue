@@ -8,6 +8,7 @@
             <th>Наименование запроса</th>
             <th>Дата создания запроса</th>
             <th>Ответственный за запрос</th>
+            <th>Статус</th>
           </tr>
         </thead>
         <tbody>
@@ -22,8 +23,10 @@
               {{ item.date }}
             </td>
             <td>
-              {{ item.userDTO }}
-              <!-- {{ item.userDTO.name }} -->
+              {{ item.user.name }}
+            </td>
+            <td>
+              <button @click.prevent="acceptRequest(item.id)">Подтвердить</button>
             </td>
           </tr>
         </tbody>
@@ -32,7 +35,7 @@
   </section>
 </template>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .admin {
   position: relative;
   min-height: 100vh;
@@ -71,9 +74,8 @@
 
 .fl-table thead th {
   color: #ffffff;
-  background: #4FC3A1;
+  background: #4fc3a1;
 }
-
 
 .fl-table thead th:nth-child(odd) {
   color: #ffffff;
@@ -81,46 +83,60 @@
 }
 
 .fl-table tr:nth-child(even) {
-  background: #F8F8F8;
+  background: #f8f8f8;
 }
 </style>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data: function () {
     return {
       requests: [],
-    }
+    };
   },
   methods: {
     getAccess: function () {
-      axios.get('http://localhost:8081/api/auth/access', {})
-        .then(response => {
-          console.log('access is allowed');
+      axios
+        .get("http://localhost:8081/api/auth/access", {})
+        .then((response) => {
+          console.log("access is allowed");
         })
-        .catch(error => {
-          console.log('access denied');
-          this.$router.push({ name: 'main' });
-        })
+        .catch((error) => {
+          console.log("access denied");
+          this.$router.push({ name: "main" });
+        });
     },
     getRequests: function () {
-      axios.get('http://localhost:8081/api/idm/get-all-wait-success', {})
-        .then(response => {
-          this.requests = response.data.InterdepartmentalRequestDTO;
+      axios
+        .get("http://localhost:8081/api/idm/get-all-wait-success", {})
+        .then((response) => {
+          this.requests = response.data.content;
         })
-        .catch(error => {
-          console.log(error, 'getRequests');
+        .catch((error) => {
+          console.log(error, "getRequests");
+        });
+    },
+    acceptRequest: function (requestsId) {
+      axios
+        .get("http://localhost:8081/api/idm/accept", {
+          params: {
+            id: requestsId,
+          },
         })
-    }
-  },
-  computed: {
-
+        .then((response) => {
+          this.getRequests();
+          console.log("accept");
+        })
+        .catch((error) => {
+          console.log(error, "acceptRequest");
+        });
+    },
   },
   created: function () {
-    // this.getAccess();
+    this.getAccess();
     this.getRequests();
-  }
-}
+  },
+};
 </script>
