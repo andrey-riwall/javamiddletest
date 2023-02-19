@@ -28,6 +28,18 @@ li {
   list-style: none;
 }
 
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+input {
+  background: none;
+  border: none;
+  outline: none;
+}
+
 img {
   max-width: 100%;
 }
@@ -39,5 +51,14 @@ h1, h2, h3, h4, h5, h6, p, span, strong {
 </style>
 
 <script>
+  import { mapActions } from 'vuex';
 
+  export default {
+    methods: {
+      ...mapActions({ validateToken: 'validateToken' })
+    },
+    created: function() {
+      this.validateToken();
+    }
+  }
 </script>

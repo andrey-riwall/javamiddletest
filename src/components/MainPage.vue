@@ -21,8 +21,20 @@
     <div class="container">
       <h2 class="heading">Home</h2>
       <ul class="list">
-        <li class="item" v-for="item in cards" :key="cards.indexOf(item)">
-
+        <li class="item" :class="{ is_active: item.status }" v-for="item in cards" :key="cards.indexOf(item)">
+          <h3 class="item__heading">
+            {{ item.heading }}
+          </h3>
+          <ul class="tabs">
+            <li class="tab" :class="{ is_active: tab.status }" v-for="tab in item.tabs" :key="tab.tab">
+              <button class="tab__btn" @click.prevent="openCard(cards.indexOf(item), tab.content, item.tabs.indexOf(tab))">
+                {{ tab.tab }}
+              </button>
+            </li>
+          </ul>
+          <h4 class="item__heading">
+            {{ item.content }}
+          </h4>
         </li>
       </ul>
     </div>
@@ -145,7 +157,46 @@
   .item {
     background: #fff;
     border-radius: 10px;
-    min-height: 100px;
+    height: 92px;
+    overflow: hidden;
+
+    &.is_active {
+      height: auto;
+    }
+  }
+
+  .item__heading {
+    margin-left: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    width: 100%;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+
+    &.is_active .tab__btn {
+      background: rgba(black, .05);
+    }
+  }
+
+  .tab__btn {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    background: rgba(black, .1);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    font-size: 20px;
   }
 </style>
 
@@ -159,7 +210,25 @@
       return {
         createStatus: false,
 
-        cards: [],
+        cards: [
+          {
+            heading: 'МУ',
+            tabs: [
+              {
+                tab: 'МУ1',
+                content: 'МУ1',
+                status: false,
+              },
+              {
+                tab: 'МУ2',
+                content: 'МУ2',
+                status: false,
+              },
+            ],
+            content: '',
+            status: false,
+          }
+        ],
 
         formName: '',
         formINN: '',
@@ -197,6 +266,17 @@
         this.$router.push({ name: 'auth' });
       },
       ...mapActions({ logout: 'logout' }),
+
+      openCard: function(cardIndex, content, tabIndex) {
+        this.cards[cardIndex].content = content;
+        this.cards[cardIndex].tabs.forEach(el => {
+          el.status = false;
+        })
+        this.cards[cardIndex].tabs[tabIndex].status = true;
+        if(!this.cards[cardIndex].status) {
+          this.cards[cardIndex].status = true;
+        }
+      }
     },
     created: function() {
       this.getCards();

@@ -1,6 +1,6 @@
 <template>
   <section class="section" :class="{ active: status }">
-    
+
 
     <div class="container" :class="{ active: status }">
 
@@ -247,5 +247,12 @@ section {
       },
       ...mapActions({ signup: 'signup', login: 'login' }),
     },
+    watch: {
+      '$store.state.authStatus': function() {
+        if(this.$store.state.authStatus) {
+          this.status = false;
+        }
+      }
+    }
   }
 </script>
