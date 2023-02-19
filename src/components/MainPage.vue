@@ -3,6 +3,7 @@
     <button class="login" @click="logoutF()">Log out</button>
     <button class="create" @click="createStatus = true">Create org</button>
     <button class="createCard" @click="createCardStatus = true">Create card</button>
+    <router-link :to="{ name: 'ir' }" class="to-ir">Your ir</router-link>
     <button v-if="createStatus" class="form-close" @click.prevent="createStatus = false">close</button>
     <button v-if="createCardStatus" class="form-close" @click.prevent="createCardStatus = false">close</button>
     <button v-if="createIRStatus" class="form-close" @click.prevent="createIRStatus = false">close</button>
@@ -133,10 +134,21 @@
   background: #557085;
 }
 
+.to-ir {
+  position: absolute;
+  top: 140px;
+  right: 20px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
 .login {
   position: absolute;
   top: 50px;
-  right: 25px;
+  right: 20px;
   color: white;
   background: none;
   border: none;
@@ -147,7 +159,7 @@
 .createCard {
   position: absolute;
   top: 110px;
-  right: 25px;
+  right: 20px;
   color: white;
   background: none;
   border: none;
@@ -158,7 +170,7 @@
 .create {
   position: absolute;
   top: 80px;
-  right: 25px;
+  right: 20px;
   color: white;
   background: none;
   border: none;

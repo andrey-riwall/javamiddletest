@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import AuthPage from '@/components/AuthPage.vue';
 import MainPage from '@/components/MainPage.vue';
 import AdminPage from '@/components/AdminPage.vue';
+import YourIRPage from '@/components/YourIRPage.vue';
 import NotFoundPage from '@/components/NotFoundPage.vue';
 
 Vue.use(VueRouter);
@@ -19,10 +20,16 @@ const routes = [
     name: 'admin', component: AdminPage, path: '/admin', meta: { requiresAuth: true }
   },
   {
+    name: 'ir', component: YourIRPage, path: '/your-ir', meta: { requiresAuth: true }
+  },
+  {
     name: 'error', component: NotFoundPage, path: '*', meta: { requiresNotAuth: true }
   },
   {
-    path: '/main', redirect: { name: 'main' }, meta: { requiresNotAuth: true }
+    path: '/main', redirect: { name: 'main' }, meta: { requiresAuth: true }
+  },
+  {
+    path: '/ir', redirect: { name: 'ir' }, meta: { requiresAuth: true }
   },
 ];
 
